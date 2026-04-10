@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="NetWatch — Real-Time IP Tracking & Analytics System. Monitor network traffic, unique IPs, and request patterns in your admin dashboard.">
+    <meta name="robots" content="noindex, nofollow">
+    <title>NetWatch | Real-Time IP Tracking & Analytics</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header class="nav-bar" role="banner">
+        <div class="nav-inner">
+            <div class="nav-brand">
+                <div class="brand-logo" aria-hidden="true">
+                    <span class="logo-dot"></span>
+                    <span class="logo-dot"></span>
+                    <span class="logo-dot"></span>
+                </div>
+                <span class="brand-name">NetWatch</span>
+                <span class="brand-tag">LIVE</span>
+            </div>
+
+            <nav class="nav-links" aria-label="Primary navigation">
+                <a href="#overview"   class="nav-link active" id="nav-overview">Overview</a>
+                <a href="#traffic"    class="nav-link"        id="nav-traffic">Traffic</a>
+                <a href="#origins"    class="nav-link"        id="nav-origins">Origins</a>
+            </nav>
+
+            <div class="nav-status" aria-live="polite" aria-label="Connection status">
+                <span class="status-indicator" id="status-dot"></span>
+                <span class="status-text"      id="status-text">Connecting...</span>
+                <span class="status-refresh"   id="last-refresh"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content" role="main">
+
+        <section id="overview" class="section" aria-labelledby="overview-heading">
+            <h1 id="overview-heading" class="section-title">Network Overview</h1>
+
+            <div class="stats-grid" role="list">
+
+                <article class="stat-card" id="card-total" role="listitem" aria-label="Total requests">
+                    <div class="stat-card__icon stat-card__icon--blue" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 12h18M3 6h18M3 18h18"/>
+                        </svg>
+                    </div>
+                    <div class="stat-card__body">
+                        <p class="stat-card__label">Total Requests</p>
+                        <p class="stat-card__value" id="stat-total">—</p>
+                        <p class="stat-card__sub"   id="stat-total-sub">Loading...</p>
+                    </div>
+                    <div class="stat-card__glow stat-card__glow--blue" aria-hidden="true"></div>
+                </article>
+
+                <article class="stat-card" id="card-unique" role="listitem" aria-label="Unique IP addresses">
+                    <div class="stat-card__icon stat-card__icon--green" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="8" r="4"/>
+                            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+                        </svg>
+                    </div>
+                    <div class="stat-card__body">
+                        <p class="stat-card__label">Unique IPs</p>
+                        <p class="stat-card__value" id="stat-unique">—</p>
+                        <p class="stat-card__sub"   id="stat-unique-sub">Loading...</p>
+                    </div>
+                    <div class="stat-card__glow stat-card__glow--green" aria-hidden="true"></div>
+                </article>
+
+                <article class="stat-card" id="card-rate" role="listitem" aria-label="Requests per minute">
+                    <div class="stat-card__icon stat-card__icon--purple" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                        </svg>
+                    </div>
+                    <div class="stat-card__body">
+                        <p class="stat-card__label">Req / Minute</p>
+                        <p class="stat-card__value" id="stat-rate">—</p>
+                        <p class="stat-card__sub"   id="stat-rate-sub">Loading...</p>
+                    </div>
+                    <div class="stat-card__glow stat-card__glow--purple" aria-hidden="true"></div>
+                </article>
+
+                <article class="stat-card" id="card-blocked" role="listitem" aria-label="Blocked IPs">
+                    <div class="stat-card__icon stat-card__icon--red" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                        </svg>
+                    </div>
+                    <div class="stat-card__body">
+                        <p class="stat-card__label">Blocked IPs</p>
+                        <p class="stat-card__value" id="stat-blocked">—</p>
+                        <p class="stat-card__sub"   id="stat-blocked-sub">Loading...</p>
+                    </div>
+                    <div class="stat-card__glow stat-card__glow--red" aria-hidden="true"></div>
+                </article>
+
+            </div>
+        </section>
+
+        <section id="traffic" class="section" aria-labelledby="traffic-heading">
+            <h2 id="traffic-heading" class="section-title">Traffic Analysis</h2>
+
+            <div class="analysis-grid">
+
+                <div class="panel panel--chart">
+                    <div class="panel__header">
+                        <span class="panel__title">Requests per Hour (Last 24h)</span>
+                        <span class="panel__badge" id="chart-total-badge">0 total</span>
+                    </div>
+                    <div class="chart-container" role="img" aria-label="Hourly traffic line chart">
+                        <canvas id="traffic-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="panel panel--endpoints">
+                    <div class="panel__header">
+                        <span class="panel__title">Top Endpoints</span>
+                    </div>
+                    <div id="endpoints-list" class="endpoints-list" role="list" aria-label="Top endpoints by hit count">
+                        <div class="loading-shimmer"></div>
+                        <div class="loading-shimmer"></div>
+                        <div class="loading-shimmer"></div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="section" aria-labelledby="logs-heading">
+            <div class="panel panel--table">
+                <div class="panel__header">
+                    <span class="panel__title">Recent Traffic</span>
+                    <div class="panel__actions">
+                        <span class="live-pulse" aria-hidden="true"></span>
+                        <span class="panel__badge">Live</span>
+                    </div>
+                </div>
+
+                <div class="table-wrapper" role="region" aria-label="Recent traffic log table" tabindex="0">
+                    <table class="traffic-table" aria-labelledby="logs-heading">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">IP Address</th>
+                                <th scope="col">Method</th>
+                                <th scope="col">Endpoint</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">User Agent</th>
+                                <th scope="col">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="logs-tbody">
+                            <tr>
+                                <td colspan="7" class="table-empty">
+                                    <span class="spinner" aria-label="Loading"></span>
+                                    Loading traffic data...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="origins" class="section" aria-labelledby="origins-heading">
+            <div class="panel panel--origins">
+                <div class="panel__header">
+                    <h2 id="origins-heading" class="panel__title">Top Origins</h2>
+                    <span class="panel__badge" id="origins-count-badge">Loading...</span>
+                </div>
+
+                <div id="origins-grid" class="origins-grid" role="list" aria-label="Top IP addresses by request count">
+                    <div class="loading-shimmer"></div>
+                    <div class="loading-shimmer"></div>
+                    <div class="loading-shimmer"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="footer" role="contentinfo">
+        <p>NetWatch &copy; 2024 &nbsp;|&nbsp; Auto-refreshes every 5 seconds &nbsp;|&nbsp; <span id="footer-db-status">Database connected</span></p>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
